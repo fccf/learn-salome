@@ -1,0 +1,47 @@
+<!--
+  Copyright (C) 2007-2016  CEA/DEN, EDF R&D, OPEN CASCADE
+
+  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+
+  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+
+-->
+<document>
+  <section name="first_app">
+    <!-- Major module parameters -->
+    <parameter name="name"            value="first_app"/>
+    <parameter name="icon"            value="first_app.png"/>
+    <parameter name="library"         value="SalomePyQtGUI"/>
+    <parameter name="documentation"   value="first_app_help"/>
+    <parameter name="version"         value="@SALOMEfirst_app_VERSION@"/>
+  </section>
+  <section name="resources">
+    <!-- Module resources -->
+    <parameter name="first_app"         value="%first_app_ROOT_DIR%/share/salome/resources/first_app"/>
+  </section>
+  <section name="first_app_help" >
+    <parameter name="sub_menu"        value="Samples"/>
+    <parameter name="%1 User's Guide" value="%first_app_ROOT_DIR%/share/doc/salome/gui/first_app/index.html"/>
+  </section>
+  <section name="windows_geometry">
+    <parameter name="first_app" value="#00 #00 #00 #FF #00 #00 #00 #00 #FD #00 #00 #00 #02 #00 #00 #00 #00 #00 #00 #01 #00 #00 #00 #02 #6B #FC #02 #00 #00 #00 #01 #FB #00 #00 #00 #22 #00 #6F #00 #62 #00 #6A #00 #65 #00 #63 #00 #74 #00 #42 #00 #72 #00 #6F #00 #77 #00 #73 #00 #65 #00 #72 #00 #44 #00 #6F #00 #63 #00 #6B #01 #00 #00 #00 #59 #00 #00 #02 #6B #00 #00 #00 #53 #00 #FF #FF #FF #00 #00 #00 #03 #00 #00 #05 #40 #00 #00 #00 #53 #FC #01 #00 #00 #00 #01 #FB #00 #00 #00 #22 #00 #70 #00 #79 #00 #74 #00 #68 #00 #6F #00 #6E #00 #43 #00 #6F #00 #6E #00 #73 #00 #6F #00 #6C #00 #65 #00 #44 #00 #6F #00 #63 #00 #6B #01 #00 #00 #00 #00 #00 #00 #05 #40 #00 #00 #00 #46 #00 #FF #FF #FF #00 #00 #04 #38 #00 #00 #02 #6B #00 #00 #00 #04 #00 #00 #00 #04 #00 #00 #00 #08 #00 #00 #00 #08 #FC #00 #00 #00 #02 #00 #00 #00 #02 #00 #00 #00 #02 #00 #00 #00 #1C #00 #53 #00 #61 #00 #6C #00 #6F #00 #6D #00 #65 #00 #53 #00 #74 #00 #61 #00 #6E #00 #64 #00 #61 #00 #72 #00 #64 #01 #00 #00 #00 #00 #FF #FF #FF #FF #00 #00 #00 #00 #00 #00 #00 #00 #00 #00 #00 #1A #00 #53 #00 #61 #00 #6C #00 #6F #00 #6D #00 #65 #00 #4D #00 #6F #00 #64 #00 #75 #00 #6C #00 #65 #00 #73 #01 #00 #00 #00 #CE #FF #FF #FF #FF #00 #00 #00 #00 #00 #00 #00 #00 #00 #00 #00 #02 #00 #00 #00 #01 #00 #00 #00 #0E #00 #50 #00 #79 #00 #48 #00 #65 #00 #6C #00 #6C #00 #6F #01 #00 #00 #00 #00 #FF #FF #FF #FF #00 #00 #00 #00 #00 #00 #00 #00"/>
+  </section>
+  <section name="windows_visibility">
+    <parameter name="first_app" value="#00 #00 #00 #00 #03 #00 #00 #00 #0E #00 #50 #00 #79 #00 #48 #00 #65 #00 #6C #00 #6C #00 #6F #01 #00 #00 #00 #1A #00 #53 #00 #61 #00 #6C #00 #6F #00 #6D #00 #65 #00 #4D #00 #6F #00 #64 #00 #75 #00 #6C #00 #65 #00 #73 #01 #00 #00 #00 #1C #00 #53 #00 #61 #00 #6C #00 #6F #00 #6D #00 #65 #00 #53 #00 #74 #00 #61 #00 #6E #00 #64 #00 #61 #00 #72 #00 #64 #01 #01 #00 #00 #00 #02 #00 #00 #00 #22 #00 #6F #00 #62 #00 #6A #00 #65 #00 #63 #00 #74 #00 #42 #00 #72 #00 #6F #00 #77 #00 #73 #00 #65 #00 #72 #00 #44 #00 #6F #00 #63 #00 #6B #01 #00 #00 #00 #22 #00 #70 #00 #79 #00 #74 #00 #68 #00 #6F #00 #6E #00 #43 #00 #6F #00 #6E #00 #73 #00 #6F #00 #6C #00 #65 #00 #44 #00 #6F #00 #63 #00 #6B #01"/>
+  </section>
+</document>

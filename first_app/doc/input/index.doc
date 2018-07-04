@@ -1,0 +1,738 @@
+/*!
+
+\mainpage Introduction to first_app sample module
+
+The purpose of the \b first_app module is to describe briefly the different
+steps in the development of a SALOME module in Python.
+
+Contents:
+- \subpage dev_steps
+- \subpage tree_structure
+- \subpage build_proc_files
+- \subpage idl_dir
+- \subpage src_dir
+- \subpage bin_dir
+- \subpage doc_dir
+- \subpage build_procedure
+- \subpage run_procedure
+- \subpage load_module
+- \subpage catalog_def
+- \subpage load_lcc
+- \subpage load_iapp
+
+\ref dev_steps ">> Next"
+
+\page dev_steps Steps in construction of the example module
+
+The example module chosen to illustrate the process of SALOME module
+development is extremely simple. The module contains a single
+component and this component provides a single service called \b
+makeBanner that accepts a character string as the sole argument and
+that returns a character string obtained by the concatenation of a
+'Hello' and the input string. The component also provides a simple
+GUI.
+
+The steps in the development are as follows:
+- create a module tree structure
+- create a SALOME component that can be loaded by a Python SALOME container
+- configure the module so that the component is known to SALOME
+- add a graphic GUI
+
+\ref index "<< Previous"<br>\ref tree_structure ">> Next"
+
+\page tree_structure Create the module tree structure
+
+The first step in the development process is the creation of the
+module tree file structure. The typical SALOME module usually includes
+some set of the configuration files (used in the build procedure of a
+module), Makefiles, IDL file that provides a definition of a CORBA
+services implemented in a module and a set of source Python files
+which implement the module CORBA engine and (optionally) its GUI.
+
+The following file structure is typical for the SALOME module:
+
+<pre>
++ first_app1_SRC
+   + CMakeLists.txt
+   + Salomefirst_appConfig.cmake.in
+   + adm_local
+     + CMakeLists.txt
+     + cmake_files
+       + CMakeLists.txt
+       + FindSalomefirst_app.cmake
+   + bin
+     + CMakeLists.txt
+     + VERSION.in
+     + runfirst_app.in
+     + runfirst_app.py
+   + idl
+     + CMakeLists.txt
+     + first_app_Gen.idl
+   + src
+     + CMakeLists.txt
+     + first_app
+       + CMakeLists.txt
+       + first_app.py
+       + first_app_utils.py
+     + first_appGUI
+       + CMakeLists.txt
+       + first_appGUI.py
+       + first_app_msg_en.ts
+       + first_app_msg_fr.ts
+       + first_app_icons.ts
+   + resources
+     + CMakeLists.txt
+     + first_app.png
+     + first_app_small.png
+     + Execfirst_app.png
+     + handshake.png
+     + stop.png
+     + first_appCatalog.xml.in
+     + SalomeApp.xml.in
+     + schema.xml
+   + doc
+     + CMakeLists.txt
+     + doxyfile.in
+     + index.doc
+</pre>
+
+Note that other files can be optionally present. For example, in some
+SALOME modules sources tree you can find such files as AUTHORS,
+INSTALL, ChangeLog, COPYING, NEWS, README, etc. Some files are
+specific only for this first_app sample module, for example PNG images
+in the resources directory which are used in the GUI dialog boxes etc.
+
+The usual way of the sources directory tree structure initial creation
+is to copy it from the existing SALOME module.
+
+\warning The files of the platform base module (KERNEL) must not be
+copied to initialise a module tree structure. It is usually preferable
+to copy files from another module such as GEOM or MED.
+
+The module name is first_app, the component name is first_app and all the
+files are put in a directory named first_app1_SRC.
+Below is a short description of these files. Note, that files with .in
+suffix are the cmake templates from which the actual files are
+generated during the build procedure.
+
+- \c CMakeLists.txt
+
+These files are input text files that contain the project parameters 
+and describe the flow control of the build process in simple CMake language as 
+a part of the build system based on CMake. These files define 
+the build procedure, namely, compilation and installation rules such as compiler 
+and linker options, installation destination folder, package version etc.
+
+- \c adm_local
+
+This directory contains additional administrative files used by the
+build procedure.
+
+- \c adm_local/cmake_files/FindSalomefirst_app.cmake
+ 
+Some modules can need some external packages in order to compile and 
+run properly. The usual approach is to write a special *.cmake file
+for the purpose of finding a certain piece of software and to set it's
+libraries, include files and definitions into appropriate variables so that
+they can be used in the build process of another project.
+It is possible to include the standard CMake detection modules (FindXyz.cmake files,
+located in the standard CMake installation directory) or, if CMake does not provide
+a search procedure for some required software, it is necessary to create *.cmake
+module for each pre-requisite.
+
+Also, it is good idea to create and distribute *.cmake file for the project being
+developed; it can be used then in the dependent projects. For example, first_app module
+installs a file FindSalomefirst_app.cmake that can be used for its detection.
+
+To search SALOME first_app module in some other project it will be only needed to write
+the following code in CMakeLists.txt: 
+
+\code
+FIND_PACKAGE(Salomefirst_app)
+\endcode
+
+- \c bin
+
+This directory usually contains different scripts.
+
+- bin/VERSION.in
+
+This file is used to document the module, it must give its version (at
+least) and (optionally) compatibilities or incompatibilities with
+other modules. This file is strongly recommended but is not essential
+for operation of the module.
+
+- bin/runfirst_app.in
+- bin/runfirst_app.py
+
+These files are not essential but make the example easier to
+use. These are scripts that can be used to run SALOME session with
+first_app module.
+
+- \c idl
+
+This directory contains IDL files that specify the CORBA services
+supplied by SALOME module.
+
+- idl/first_app_Gen.idl
+
+This is the CORBA IDL definition of the services implemented by SALOME
+first_app module.
+
+- \c src
+
+This is a root directory of the module source codes. Usually it contains
+one or more sub-directories that provide an implementation of module
+libraries, executables, Python API modules, etc. The hierarchy of the
+sources tree is arbitrary; it follows the specific module needs.
+
+- src/first_app/first_app.py
+- src/first_app/first_app_utils.py
+
+These files provide the implementation of a CORBA engine of the
+first_app module. In particular, this is an implementation of the 
+services defined in the first_app_Gen.idl file.
+
+- src/first_appGUI/first_appGUI.py
+
+The src/first_appGUI is an optional directory that provides an
+implementation of first_app module's GUI. Strictly speaking, the
+GUI is optional for each SALOME module. In some cases it's
+enough to implement CORBA engine only. Then, the services of the
+module will be avaiable in a CORBA environment. The module can be
+loaded to the SALOME container and its services can be used in the
+Supervisor computation schemas, in Python scripts or/and refer to it
+in other modules. A GUI is necessary in the cases if it is planned to
+access to the module functionality from the SALOME GUI session via
+menu actions, dialog boxes and so on.
+
+- src/first_appGUI/first_app_msg_en.ts
+- src/first_appGUI/first_app_msg_fr.ts
+- src/first_appGUI/first_app_icons.ts
+
+These files provide a description (internationalization) of GUI
+resources of the first_app module. \c first_app_msg_en.ts provides an English
+translation of the string resources used in a module. \c first_app_icons.ts
+defines images and icons resources used within the GUI of the
+first_app module. Please refer to Qt linguist documentation for more
+details.
+
+- \c resources
+
+This optional directory usually contains different resources files
+required for the correct operation of SALOME module.
+
+- resources/first_app.png
+- resources/first_app_small.png
+- resources/Execfirst_app.png
+- resources/handshake.png
+- resources/stop.png
+
+The resources folder usually includes different resource files used
+within the SALOME module. For example, first_app.png file provides an icon
+of first_app module to be shown in the SALOME GUI desktop. Execfirst_app.png is
+an icon for the makeBanner() function used in the menu and
+toolbar. The icons handshake.png and stop.png are used in the dialog
+boxes and first_app_small.png icon is used to display in the Object
+browser for root first_app entity.
+
+- resources/first_appCatalog.xml.in
+
+The XML description of the CORBA services provided by the first_app
+module. This file is parsed by Supervisor and YACS module to generate
+the list of service nodes to be used in the calculation schemas. The
+simplest way to create this file is to use Catalog Generator utility
+provided by the SALOME KERNEL module, that can automatically generate
+XML description file from the IDL file.
+
+- resources/SalomeApp.xml.in
+
+This file is essential for the module. It provides some parameters of
+the module which define module behavior in SALOME. In particular it
+should provide a section with the name corresponding to the name of a
+module ("first_app" in this case) with the following parameters:
+\code
+  <section name="first_app">
+    <parameter name="name"            value="first_app"/>
+    <parameter name="icon"            value="first_app.png"/>
+    <parameter name="library"         value="SalomePyQtGUI"/>
+    <parameter name="documentation"   value="first_app_help"/>
+    <parameter name="version"         value="@SALOMEfirst_app_VERSION@"/>
+  </section>
+\endcode
+
+The \a "name" parameter defines GUI name of a module. The \a "icon"
+parameter defines a GUI icon of a module. The parameter \a "library"
+specifies the name of the C++ library representing the front-end of
+the module in the SALOME GUI desktop. The Python modules which do not
+implement its own C++ front-end GUI library should specify
+"SalomePyQtGUI" value in this parameter. The \a "documentation" parameter
+provides a name for the help-related resource section (see below).
+The \a "version" parameter defines the version of the module.
+
+The section \a "resources" also specifies the directory that contains
+resources of a module (icons, translation files, etc).
+
+\code
+  <section name="resources">
+    <parameter name="first_app" value="${first_app_ROOT_DIR}/share/salome/resources/first_app"/>
+  </section>
+\endcode
+
+The section \a "first_app_help" provides information on the location of 
+the help page and the eventual sub-menu in the Help menu.
+
+\code
+  <section name="first_app_help" >
+    <parameter name="sub_menu"        value="Samples"/>
+    <parameter name="%1 User's Guide" value="%first_app_ROOT_DIR%/share/doc/salome/gui/first_app/index.html"/>
+  </section>
+\endcode
+
+- doc/doxyfile.in
+
+The Doxygen configuration file. The Doxygen is used to build this
+documentation. The file doxyfile.in provides a rules for the
+generation of module documentation.
+
+- doc/index.doc
+
+An input file for the Doxygen, which provides a source of this documentation.
+
+- \c doc/images
+
+This sub-folder contains images used in the documentation.
+
+- \c doc/static
+
+This sub-folder contains auxiliary files used when generating documentation
+by Doxygen, like header (\c header.html.in) and footer (\c footer.html)
+of the HTML pages, style sheet (\c doxygen.css) etc.
+
+\ref dev_steps "<< Previous"<br>\ref build_proc_files ">> Next"
+
+\page build_proc_files Build procedure input files
+
+In most cases SALOME uses \b CMake-based build system for modules.
+CMake is a cross-platform build system which works on Linux, Windows
+and other operating systems.
+
+The \c CMakeLists.txt files are used to describe the build procedure,
+in particular:
+- Test platform;
+- Test system configuration;
+- Detect pre-requisites;
+- Generate build rules (for example, standard UNIX makefiles on Linux,
+  MSVC solutions, etc).
+
+Project's root directory provides main CMake configuration that allows 
+build all targets into one set of binaries and libraries. Each sub-directory
+also includes CMake configuration file (CMakeLists.txt) that specifies
+targets being build.
+
+The file \c CMakeLists.txt in root directory of the first_app module provides 
+basic build rules to be used in other \c CMakeLists.txt files. 
+It sets main properties of project: name, version, pre-requisites, 
+installation paths, programming languages being used by the project,
+tree of sub-directories, etc.
+
+A lot of files used by the build procedure of HELLO module are located
+in SALOME KERNEL module (that is referenced by the \c KERNEL_ROOT_DIR
+environment variable), namely in its \c salome_adm sub-folder.
+Similarly, the \c GUI_ROOT_DIR environment variable is used for the
+graphical user interface (GUI) module of SALOME; this module also
+provides a set of configuration utilities (\c *.cmake files) in its 
+\c adm_local folder.
+
+The files with an \c .in extension are the skeletons which are processed
+by CMake to transform it to the resulting files in the build directory during
+the configuration process.
+
+\ref tree_structure "<< Previous"<br>\ref idl_dir ">> Next"
+
+\page idl_dir The idl directory
+
+The \c idl directory requires a \c CMakeLists.txt that must make the
+compilation of the CORBA IDL \c first_app_Gen.idl file and install all the
+generated files into the correct module installation directories.
+This is done by using \c OMNIORB_ADD_MODULE() CMake macro:
+
+\code
+OMNIORB_ADD_MODULE(SalomeIDLfirst_app first_app_Gen.idl ${KERNEL_ROOT_DIR}/idl/salome ${KERNEL_SalomeIDLKernel})
+INSTALL(TARGETS SalomeIDLfirst_app EXPORT ${PROJECT_NAME}TargetGroup DESTINATION ${SALOME_INSTALL_LIBS})
+\endcode
+
+The idl file itself must define a CORBA module for which the name must
+be different from the module name to avoid name conflicts and define a
+CORBA interface that is derived at least from the EngineComponent interface  
+of the Engines module. The name of the CORBA module will be
+\b first_app_ORB and the name of the interface will be \b first_app_Gen. 
+
+\ref build_proc_files "<< Previous"<br>\ref src_dir ">> Next"
+
+\page src_dir The src directory
+
+The src contains all source files required to build and install CORBA
+engine and (optionally) GUI of the module. Each of these entities usually
+has (but this is not actually obligatory) its own directory.
+
+The \c CMakeLists.txt file triggers the path of sub-directories described
+by the \a ADD_SUBDIRECTORY() command.
+
+- The src/first_app directory
+
+This directory contains the Python files that implement the engine
+of the module. The \c CMakeLists.txt defines the rules used to install these
+files to the destination folder. The name of the module
+engine Python file is predefined and should be set as <MODULE>.py
+where <MODULE> is a name of the module. In the case of the first_app
+module, the name of the engine Python script should be first_app.so.
+
+The \c first_app.py Python script implements first_app class that is derived
+from the first_app_Gen interface of the first_app_ORB__POA CORBA module,
+the SALOME_ComponentPy_i class (base implementation of SALOME
+Python module engine exported by the KERNEL module) and
+SALOME_DriverPy_i class that provides base implementation of
+persistence mechanism.
+
+In particular, \a first_app class implements makeBanner() function that is
+defined in the IDL interface first_app_ORB::first_app_Gen. 
+
+\code
+def makeBanner( self, name ):
+    banner = "Hello %s!" % name
+    return banner
+\endcode
+
+Other services
+defined in first_app_Gen CORBA interface also should be implemented by
+this class.
+
+- The src/first_appGUI directory
+
+This directory contains the Python files that implement the GUI
+of first_app module. The name of the module GUI Python script is
+predefined and should be set as <MODULE>GUI.py where <MODULE> is a
+name of the module. In the case of the first_app module, the name of the
+GUI Python script should be first_appGUI.py.
+
+The implementation of GUI of the first_app module should be done
+according to the architecture and rules specified by the SALOME GUI
+module. The first_app.py script should implement a set of the functions
+which define the module behavior in GUI, for example, create menus,
+toolbars, define context popup menus, objects selection behavior,
+implement dialog boxes etc.
+ 
+Here below is a short description of these methods. For more details
+please refer to the SALOME GUI module documentation.
+
+- initialize() - module first initialization; usually used to create
+  GUI actions, menus, toolbars and so on;
+- activate() - module activation; perform actions which should
+  be done when the module is activated by the user;
+- deactivate() - module deactivation; perform actions which should
+  be done when the module is deactivated by the user;
+- windows() - get a list and a position of the windows to be
+  associated with the module; these windows will be automatically
+  opened and positioned according to the setting defined by the value
+  returned by this function;
+- views() - get a list of the compatible viewers; these viewers
+  will be automatically opened/raised on the module activation;
+- createPopupMenu() - create and return context popup menu according
+  to the current selection;
+- createPreferences() - initialize module's preferences;
+- preferenceChanged() - callback function that is called when some
+  module's preference is changed by the user; allows to perform the
+  corresponding actions;
+- engineIOR() - to get the reference to the module CORBA engine
+
+Note, that some of these methods are optional and need not be
+obligatory implemented because SalomePyQtGUI_Module class provides a
+base implementation of these functions. It's sometimes enough to
+implement only some of them, depending on the module needs.
+
+In the case of first_app module, some of these functions are
+implemented to provide a sample for the development:
+
+- engineIOR() that initializes first_app module's eggine:
+
+\code
+def engineIOR():
+    IOR = ""
+    if getORB() and getEngine():
+        IOR = getORB().object_to_string( getEngine() )
+        pass
+    return IOR
+\endcode
+
+- initialize() that sets default module preferences
+
+\code
+def initialize():
+    if not sgPyQt.hasSetting( "first_app", "def_obj_name"):
+        sgPyQt.addSetting( "first_app", "def_obj_name", GUIcontext.DEFAULT_NAME )
+    if not sgPyQt.hasSetting( "first_app", "creation_mode"):
+        sgPyQt.addSetting( "first_app", "creation_mode", 0 )
+\endcode
+
+- createPreferences() that initializes module preferences for the
+ application's Preferences dialog box
+
+\code
+def createPreferences():
+    if verbose() : print "first_appGUI.createPreferences() : study : %d" % _getStudyId()
+    gid = sgPyQt.addPreference( "General" )
+    gid = sgPyQt.addPreference( "Object creation", gid )
+    pid = sgPyQt.addPreference( "Default name",  gid, SalomePyQt.PT_String,   "first_app", "def_obj_name" )
+    pid = sgPyQt.addPreference( "Default creation mode", gid, SalomePyQt.PT_Selector, "first_app", "creation_mode" )
+    strings = QStringList()
+    strings.append( "Default name" )
+    strings.append( "Generate name" )
+    strings.append( "Ask name" )
+    indexes = []
+    indexes.append( QVariant(0) )
+    indexes.append( QVariant(1) )
+    indexes.append( QVariant(2) )
+    sgPyQt.setPreferenceProperty( pid, "strings", QVariant( strings ) )
+    sgPyQt.setPreferenceProperty( pid, "indexes", QVariant( indexes ) )
+    pass
+\endcode
+
+- windows() that defines dockable windows layout
+
+\code
+def windows():
+    if verbose() : print "first_appGUI.windows() : study : %d" % _getStudyId()
+    wm = {}
+    wm[SalomePyQt.WT_ObjectBrowser] = Qt.LeftDockWidgetArea
+    wm[SalomePyQt.WT_PyConsole]     = Qt.BottomDockWidgetArea
+    return wm
+\endcode
+
+Please refer to first_appGUI.py script for more details about
+implementation of other callback functions.
+
+An implemention of the ShowHello() function is quite simple. It shows
+the small dialog box allowing user to enter the name, and then uses
+reference to the module CORBA engine to invoke its makeBanner()
+service.
+
+Note, that GUI elements of the Python module are implemented with help
+of PyQt toolkit which provides a Python wrappings of the Qt library.
+
+\ref idl_dir "<< Previous"<br>\ref bin_dir ">> Next"
+
+\page bin_dir The bin directory
+
+The file VERSION.in is used to document the module, it must define its
+version and (optionally) its compatibilities or incompatibilities with
+other modules. Therefore, it is strongly recommended but is not
+essential for correct operation of the module.
+
+The runfirst_app.in file is the equivalent of the runSalome script
+distributed by the KERNEL module but configured to start SALOME
+session with first_app module only.
+
+The runfirst_app.py file reuses part of functionality provided by the
+KERNEL's runSalome.py script. It is used to run SALOME session and
+start first_app module in this session. 
+
+\ref src_dir "<< Previous"<br>\ref doc_dir ">> Next"
+
+\page doc_dir The doc directory
+
+This directory provides documentation files of the module. The
+documentation of the module can be implemented in the arbitrary
+way. But if you want your documentation to appear in the SALOME GUI
+desktop's Help menu, some specific actions should be done as follows.
+
+The documentation should be generated in the HTML format. For example,
+the documentation of the first_app module is generated using Doxygen
+tool. It allows to generate structured set of HTML pages from the set
+of input plain text files. Input source files should include Doxygen
+tags and optionally direct HTML tags. For more details please refer to
+the Doxygen documentation.
+
+The resulting documentation of a module should include at least one
+file index.html. All the HTML and image files should be exported by
+the build procedure to the following directory:
+<module_installation_dir>/share/doc/salome/gui/<MODULE>
+where <module_installation_dir> is a module installation folder and
+MODULE is its name. For example, for first_app module, at least one file
+should exist:
+<first_app_module_installation_dir>/share/doc/salome/gui/first_app/index.html. 
+
+The SALOME GUI automatically searches for the index.html file in the
+mentioned module directory. If the file is found, the corresponding
+menu command is automatically added to the Help menu of the SALOME GUI
+desktop.
+
+\ref bin_dir "<< Previous"<br>\ref build_procedure ">> Next"
+
+\page build_procedure Construction, installation
+
+Before building first_app module, please ensure that SALOME environment is
+set properly. Assume that SALOME environment is set in env_products.sh
+script. In order to build and install first_app module, you have to
+perform several steps:
+
+<pre>
+[bash% ] source env_products.sh
+[bash% ] mkdir first_app_BUILD
+[bash% ] cd first_app_BUILD
+[bash% ] cmake -DCMAKE_BUILD_TYPE=<Mode> -DCMAKE_INSTALL_PREFIX=<first_app_module_installation_dir> ../first_app1_SRC
+[bash% ] make
+[bash% ] make install
+</pre>
+
+The first command sets environment for building project.
+
+Second command creates a build directory for the first_app module. Then
+next step is to cd to this build directory. From this directory you 
+invoke cmake command, where <Mode> is build mode (Release or Debug),
+<first_app_module_installation_dir> is a destination folder to install first_app module of SALOME.
+By default (if CMAKE_INSTALL_PREFIX option is not given), first_app module will be 
+configured for installation to the /usr directory that requires root permissions 
+to complete the installation. 
+
+Next steps - build the package (\c make) and install it (\c make install). 
+
+On each step, you have to ensure that the operation is finished correctly 
+(no errors raised). After the last step is finished, the first_app module is built
+and installed to the \c \<first_app_module_installation_dir\> directory.
+
+
+\ref doc_dir "<< Previous"<br>\ref run_procedure ">> Next"
+
+\page run_procedure Running SALOME
+
+Go to the the <first_app_module_installation_dir> directory and type:
+
+<pre>
+[bash% ] ./bin/salome/runfirst_app
+</pre>
+
+This command runs SALOME session configured for KERNEL and the first_app
+module. At the end of running, the user will be prompted by the
+Python interpreter command line configured for SALOME that provides
+access to SALOME Python API (including CORBA interfaces).
+
+The runfirst_app file is a shell script that executes a Python commands
+running SALOME session by passing arguments to it in a command line:
+	
+<pre>
+${KERNEL_ROOT_DIR}/bin/salome/envSalome.py python -i $first_app_ROOT_DIR/bin/salome/runfirst_app.py --modules=first_app --killall
+</pre>
+
+These arguments state that the runfirst_app.py script located in the
+first_app module will be used, that the first_app component will be
+activated and all previously running SALOME sessions should be
+shutdowned.
+
+This command will not function unless the following environment
+variables have previously been set:
+
+<pre>
+export KERNEL_ROOT_DIR=<KERNEL_module_installation_dir>
+export first_app_ROOT_DIR=<first_app_module_installation_dir>
+</pre>
+
+\warning It is possible that the SALOME run will not reach the end.
+In some circumstances, the time to start CORBA servers may be long and
+could exceed the timeout. If the reasons is that the time to
+load dynamic libraries is long, it is possible that a second run
+immediately afterwards will be successful.
+ 
+\ref build_procedure "<< Previous"<br>\ref load_module ">> Next"
+
+\page load_module Loading first_app component
+
+The first_app_ORB module has to be imported before making a request to
+load the component into the container, to obtain access to methods of
+the component.  This container is made accessible in the runfirst_app.py
+by means of the \b container variable:
+
+<pre>
+>> import first_app_ORB
+>> c=container.load_impl("first_app","first_app")
+>> c.makeBanner("Christian")
+</pre>
+
+The last instruction returns a string "Hello Christian". Proceed as
+follows to see the CORBA objects created by these actions:
+
+<pre>
+>> clt.showNS()
+</pre>
+
+\ref run_procedure "<< Previous"<br>\ref catalog_def ">> Next"
+
+\page catalog_def first_app module catalog definition
+
+In the example from the previous chapter, the first_app component was
+loaded by making a direct request to the SALOME container. This is not
+the standard method for loading of a component. The normal way uses
+the SALOME LifeCycle service that invokes SALOME Module Catalog
+services to identify the component and its properties and then calls
+the requested container to load the component. 
+
+Before this method can be used, the component must be declared in a
+catalog in the XML format, for which the name must be
+<Module>Catalog.xml. In our case, it will be first_appCatalog.xml.
+Usually this catalog is put to the resources sub-directory of the
+directory tree. The simplest way to create this file is to use Catalog
+Generator utility provided by the SALOME KERNEL module, that can
+automatically generate XML description file from the IDL file.
+
+\ref load_module "<< Previous"<br>\ref load_lcc ">> Next"
+
+\page load_lcc Loading first_app component via LifeCycle service
+
+The method of loading the component is not very different from that
+is described above. The services of the LifeCycle module are used in
+this case instead of calling the container directly. The call sequence
+is contained in the runfirst_app.py \b test() function.
+
+<pre>
+    c=test(clt)
+    c.makeBanner("Christian")
+</pre>
+
+The test function creates the LifeCycle object. It then asks for the
+first_app component to be loaded in the FactoryServer container:
+
+\code
+def test(clt):
+    """
+    Test function that creates an instance of first_app component
+    usage : hello=test(clt)
+    """
+    import LifeCycleCORBA
+    lcc = LifeCycleCORBA.LifeCycleCORBA(clt.orb)
+    import first_app_ORB
+    first_app = lcc.FindOrLoadComponent("FactoryServePy", "first_app")
+    return first_app
+\endcode
+
+\ref catalog_def "<< Previous"<br>\ref load_iapp ">> Next"
+
+\page load_iapp Loading from the GUI (IAPP)
+
+In order to activate first_app module in the SALOME GUI desktop, the user
+should press the first_app module's button on the "Modules" toolbar or
+select the name of the module in the combo box on this toolbar.
+
+The image file to be used as an icon of a module should be exported by
+the module build procedure. The icon file name is defined in the
+corresponding SalomeApp.xml configuration file:
+\code
+  <section name="first_app">
+    <parameter name="name" value="Hello"/>
+    <parameter name="icon" value="first_app.png"/>
+    <parameter name="library" value="SalomePyQtGUI"/>
+  </section>
+\endcode
+
+\ref load_lcc "<< Previous"
+
+*/

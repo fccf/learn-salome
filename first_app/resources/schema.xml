@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<proc name="newSchema_1">
+   <property name="DefaultStudyID" value="1"/>
+   <type name="string" kind="string"/>
+   <struct name="Engines/dataref">
+      <member name="ref" type="string"/>
+   </struct>
+   <objref name="Study" id="IDL:SALOMEDS/Study:1.0"/>
+   <type name="bool" kind="bool"/>
+   <sequence name="boolvec" content="bool"/>
+   <type name="double" kind="double"/>
+   <sequence name="dblevec" content="double"/>
+   <objref name="file" id="file"/>
+   <type name="int" kind="int"/>
+   <sequence name="intvec" content="int"/>
+   <struct name="stringpair">
+      <member name="name" type="string"/>
+      <member name="value" type="string"/>
+   </struct>
+   <sequence name="propvec" content="stringpair"/>
+   <objref name="pyobj" id="python:obj:1.0"/>
+   <sequence name="seqboolvec" content="boolvec"/>
+   <sequence name="seqdblevec" content="dblevec"/>
+   <sequence name="seqintvec" content="intvec"/>
+   <sequence name="stringvec" content="string"/>
+   <sequence name="seqstringvec" content="stringvec"/>
+   <container name="DefaultContainer">
+      <property name="container_name" value="FactoryServer"/>
+      <property name="name" value="localhost"/>
+   </container>
+   <service name="makeBanner0">
+      <component>first_app</component>
+      <load container="DefaultContainer"/>
+      <method>makeBanner</method>
+      <inport name="name" type="string"/>
+      <outport name="return" type="string"/>
+   </service>
+   <service name="createObject1">
+      <component>first_app</component>
+      <load container="DefaultContainer"/>
+      <method>createObject</method>
+      <inport name="theStudy" type="Study"/>
+      <inport name="name" type="string"/>
+   </service>
+   <inline name="PyFunction4">
+      <function name="getStudy">
+         <code><![CDATA[def getStudy():
+  import salome
+  return salome.myStudy
+]]></code>
+      </function>
+      <outport name="study" type="Study"/>
+   </inline>
+   <control> <fromnode>createObject1</fromnode> <tonode>makeBanner0</tonode> </control>
+   <control> <fromnode>PyFunction4</fromnode> <tonode>createObject1</tonode> </control>
+   <datalink control="false">
+      <fromnode>PyFunction4</fromnode> <fromport>study</fromport>
+      <tonode>createObject1</tonode> <toport>theStudy</toport>
+   </datalink>
+   <parameter>
+      <tonode>createObject1</tonode><toport>name</toport>
+      <value><string>object</string></value>
+   </parameter>
+   <parameter>
+      <tonode>makeBanner0</tonode><toport>name</toport>
+      <value><string>John Smit</string></value>
+   </parameter>
+   <presentation name="createObject1" x="241.5" y="57" width="158" height="90" expanded="1" expx="241.5" expy="57" expWidth="158" expHeight="90" shownState="0"/>
+   <presentation name="makeBanner0" x="494" y="57" width="158" height="63" expanded="1" expx="494" expy="57" expWidth="158" expHeight="63" shownState="0"/>
+   <presentation name="PyFunction4" x="24" y="57" width="158" height="63" expanded="1" expx="24" expy="57" expWidth="158" expHeight="63" shownState="0"/>
+   <presentation name="__ROOT__" x="0" y="0" width="656" height="151" expanded="1" expx="0" expy="0" expWidth="656" expHeight="151" shownState="0"/>
+</proc>
