@@ -1,0 +1,181 @@
+***************************
+About SALOME light_app sample
+***************************
+
+SALOME light_app module presents example of a simple SALOME module, implemented
+with Python, without CORBA-engine; such type of module is called "light" in
+SALOME.
+
+This sample demonstrates a way to create a modules which have only GUI written
+in Python but nevertheless can be integrated into SALOME platform.
+
+This sample module is a simple text file reader. Each empty line read from the
+file is presented in the data tree as the beginning of new paragraph; paragraph
+can be empty. Non-empty line presents a "leaf" in the data tree.
+
+Thus, the data tree hierarchy has tree levels:
+
+Root
+  |__ Paragraph
+  |        |____ Text line
+  |        |____ Text line
+  |        |____ ...
+  |__ Paragraph
+  |__ Paragraph
+  |        |____ Text line
+  |        |____ ...
+  |__ ...
+
+For more information about SALOME platform please visit the SALOME web site:
+
+  <http://www.salome-platform.org/>
+
+=======
+License
+=======
+
+SALOME platform is distributed under the GNU Lesser General Public License.
+See COPYING file for more details.
+
+Also, additional information can be found at SALOME platform web site:
+
+  <http://www.salome-platform.org/downloads/license/>
+
+============
+Installation
+============
+
+--------------
+Pre-requisites
+--------------
+
+SALOME platform relies on a set of third-party softwares; some of them are needed
+at build time only, while other ones are needed in runtime also.
+
+For more information about the pre-requisites please visit SALOME platform web
+site:
+
+* Check Release Notes and Software Requirements of the latest SALOME release at
+
+  <http://www.salome-platform.org/downloads/current-version/>
+
+* Pre-requisites page at SALOME web site:
+
+  <http://www.salome-platform.org/downloads/license/>
+
+Note: SALOME light_app needs SALOME KERNEL and SALOME GUI as pre-requisites.
+
+------------------
+Basic Installation
+------------------
+
+The build procedure of the SALOME platform is implemented with CMake.
+In order to build the module you have to do the following actions:
+
+1. Set up environment for pre-requisites (see "Pre-requisites" section above).
+
+2. Create a build directory:
+
+   % mkdir light_app_BUILD
+
+3. Configure the build procedure:
+
+   % cd light_app_BUILD
+   % cmake -DCMAKE_BUILD_TYPE=<mode> -DCMAKE_INSTALL_PREFIX=<installation_directory> <path_to_src_dir>
+
+   where
+   - <mode> is either Release or Debug (default: Release);
+   - <installation_directory> is a destination folder to install SALOME light_app
+     module (default: /usr);
+   - <path_to_src_dir> is a path to the SALOME light_app sources directory.
+
+   Note: by default (if CMAKE_INSTALL_PREFIX option is not given), SALOME light_app
+   module will be configured for installation to the /usr directory that requires
+   root permissions to complete the installation.
+
+4. Build and install:
+
+   % make
+   % make install
+
+   This will install SALOME light_app module to the <installation_directory>
+   specified to cmake command on the previous step.
+
+-------------------
+Custom installation
+-------------------
+
+SALOME light_app module supports a set of advanced configuration options;
+for more details learn CMakeLists.txt file in the root source directory.
+
+You can also use other options of cmake command to customize your installation.
+Learn more about available options by typing
+
+   % cmake --help
+
+=============
+Functionality
+=============
+
+The functionality of the module is very similar to that one provided by
+LIGHT module.
+
+The module functionality includes the following user actions:
+
+* "File" menu:
+
+  - "Load text file"       : reads and loads the contents of text file to the
+                             study; the previous contents of the data tree
+                             is erased.
+
+  - "Save text file"       : dumps the contents of the data tree to the text
+                             file.
+
+* "light_app" menu:
+
+  - "Insert Line"          : inserts new text line entered by the user to the
+                             end of selected paragraph.
+
+  - "Edit Line"            : allows user to edit selected text line.
+
+  - "Remove Lines" :       : removes selected line(s).
+
+  - "Clear All"            : clears contents of the data tree.
+
+  - "Display Line"         : displays selected line in the VTK 3D viewer.
+
+  - "Erase Line"           : erases selected line from the VTK 3D viewer.
+
+Most of these actions change the contents of the internal data model, so the data
+tree is rebuilt correspondingly.
+Some of these commands are also avaiable via the context popup menu in the Object
+Browser.
+
+Saving/restoring of the data is performed by using of default SALOMEDS-based
+persistence mechanism provided by SALOME GUI via embedded SalomeApp engine.
+
+Note: after opening of the sudy file the light_app module data is not
+immediately displayed in the Object Browser. To see it, you should activate the
+module. Such behaviour takes place because the light_app module does not publish any
+data directly in the SALOMEDS study - this is typical behavior of any "lighy"
+SALOME module, imposed by limitation of SALOME platform.
+
+=====
+Usage
+=====
+
+Run SALOME with light_app module:
+
+- In full, CORBA-based session:
+
+runSalome --modules=light_app
+
+- In "light" session:
+
+runLightSalome.sh --modules=light_app
+
+===============
+Troubleshooting
+===============
+
+Please, send a mail to webmaster.salome@opencascade.com.
